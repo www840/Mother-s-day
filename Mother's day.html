@@ -1,0 +1,219 @@
+﻿<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عيد الأم</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            text-align: center;
+            padding: 50px;
+            margin: 0;
+            position: relative;
+            transition: background-color 3s ease;
+            overflow-y: scroll; /* علشان نقدر نسكرول */
+        }
+        h1 {
+            font-size: 3rem;
+            transition: color 3s ease;
+        }
+        p {
+            font-size: 1.5rem;
+            line-height: 1.6;
+            transition: color 3s ease;
+        }
+        .message {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            transition: background-color 3s ease;
+        }
+        .images-container {
+            display: flex;
+            justify-content: center; /* علشان الصور تبقى في المنتصف */
+            align-items: center; /* علشان الصور تبقى على نفس المستوى */
+            margin-top: 20px;
+        }
+        .image-wrapper {
+            flex: 1;
+            max-width: 40%; /* علشان نحجم الصور */
+            text-align: center;
+        }
+        img {
+            max-width: 100%;
+            height: auto; /* علشان نحافظ على نسبة العرض للطول */
+            border-radius: 10px;
+        }
+        .heart {
+            font-size: 2rem;
+            transition: color 3s ease;
+        }
+        button {
+            background-color: #e91e63;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #d81b60;
+        }
+        .hidden {
+            display: none;
+        }
+        .star {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: gold;
+            border-radius: 50%;
+            animation: rise 3s linear infinite;
+            z-index: 1;
+        }
+        @keyframes rise {
+            0% {
+                transform: translateY(100vh);
+            }
+            100% {
+                transform: translateY(-100%);
+            }
+        }
+        /* نص بين الصورتين */
+        .between-images {
+            font-size: 2rem;
+            color: #e91e63; /* لون النص الافتراضي */
+            margin: 0 20px;
+            transition: color 3s ease; /* علشان يتغير لون النص مع الخلفية */
+        }
+        /* زرار Stop */
+        .stop-button {
+            background-color: #333;
+            padding: 10px 20px;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="message">
+        <h1>عيد أم سعيد يا أمي الحبيبة! ❤️</h1>
+        <p>
+            أمي الغالية، كل عام وأنتِ بخير. أنتِ نور حياتي ودائمًا مصدر الحب والحنان. شكرًا لكِ على كل شيء، على تضحياتك وحنانك الذي لا ينتهي. أحبك من كل قلبي!
+        </p>
+        <p class="heart">❤️❤️❤️</p>
+        
+        <!-- الزرار الكبير -->
+        <button onclick="startCelebration()">اضغط هنا علشان تبقي مبسوطة ❤️</button>
+        
+        <!-- زرار Stop -->
+        <button class="stop-button" onclick="stopMusic()">Stop</button>
+        
+        <!-- الرسالة اللي هتظهر -->
+        <p id="hiddenMessage" class="hidden">
+            أمي، أنتِ أجمل أم في الدنيا! كل سنة وأنتِ طيبة يا قلبى ❤️
+        </p>
+        
+        <!-- الصور -->
+        <div id="hiddenImages" class="images-container hidden">
+            <div class="image-wrapper">
+                <img src="WhatsApp Image 2025-03-21 at 18.57.15_bd9bb069.jpg" alt="صورة القمر 1">
+                <p>صورة القمر 1</p>
+            </div>
+            <!-- النص بين الصورتين -->
+            <div class="between-images">نيرمين ❤️</div>
+            <div class="image-wrapper">
+                <img src="WhatsApp Image 2025-03-21 at 18.57.14_06a7002a.jpg" alt="صورة القمر 2">
+                <p>صورة القمر 2</p>
+            </div>
+        </div>
+        
+        <!-- الأغنية -->
+        <audio id="music">
+            <source src="https://files.catbox.moe/sebnrr.mp3" type="audio/mpeg">
+            المتصفح مش مدعم تشغيل الأغنية.
+        </audio>
+    </div>
+
+    <script>
+        // دالة لتحديد إذا كان اللون فاتح أو داكن
+        function isLightColor(color) {
+            const hex = color.replace("#", "");
+            const r = parseInt(hex.substr(0, 2), 16);
+            const g = parseInt(hex.substr(2, 2), 16);
+            const b = parseInt(hex.substr(4, 2), 16);
+            const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+            return brightness > 128; // إذا كانت القيمة أكبر من 128، اللون فاتح
+        }
+
+        // دالة لتغيير لون الخلفية والنص
+        function changeBackgroundColor() {
+            const colors = [
+                "#FFD1DC", "#FFB6C1", "#FF69B4", "#FF1493", "#DB7093", "#C71585", "#FFC0CB", "#FFA07A", "#FF7F50", "#FF4500"
+            ];
+            const randomColor = colors[Math.floor(Math.random() * colors.length)];
+            document.body.style.backgroundColor = randomColor;
+            document.querySelector(".message").style.backgroundColor = randomColor;
+
+            // تغيير لون النص بناءً على لون الخلفية
+            const textColor = isLightColor(randomColor) ? "#000000" : "#FFFFFF";
+            document.querySelector("h1").style.color = textColor;
+            document.querySelectorAll("p").forEach(p => p.style.color = textColor);
+            document.querySelector(".heart").style.color = textColor;
+            document.querySelector(".between-images").style.color = textColor; // تغيير لون النص بين الصورتين
+        }
+
+        // دالة لإنشاء النجوم
+        function createStars() {
+            const starCount = 100; // عدد النجوم
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement("div");
+                star.classList.add("star");
+                star.style.left = `${Math.random() * 100}vw`;
+                star.style.top = `${Math.random() * 100}vh`;
+                star.style.animationDuration = `${Math.random() * 2 + 1}s`;
+                star.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 70%)`;
+                document.body.appendChild(star);
+            }
+        }
+
+        // دالة العرض والتشغيل
+        function startCelebration() {
+            // نجيب العناصر اللي هتظهر
+            const hiddenMessage = document.getElementById("hiddenMessage");
+            const hiddenImages = document.getElementById("hiddenImages");
+            const music = document.getElementById("music");
+            
+            // نخلي الرسالة تظهر
+            hiddenMessage.classList.remove("hidden");
+            
+            // نخلي الصور تظهر
+            hiddenImages.classList.remove("hidden");
+            
+            // نشغل الأغنية
+            music.play();
+            
+            // ننشئ النجوم
+            createStars();
+            
+            // نغير لون الخلفية باستمرار
+            setInterval(changeBackgroundColor, 3000); // كل 3 ثواني لون جديد
+        }
+
+        // دالة لإيقاف الأغنية
+        function stopMusic() {
+            const music = document.getElementById("music");
+            music.pause(); // نوقف الأغنية
+        }
+    </script>
+</body>
+</html>
